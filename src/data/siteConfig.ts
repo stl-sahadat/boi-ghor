@@ -14,11 +14,11 @@ export const SITE_CONFIG = {
     freeDeliveryThreshold: 1200, // Orders over 1200 BDT get free delivery in demo
   },
 
-  // Contact Information Placeholders
+  // Contact Information
   contact: {
-    hotline: '+৮৮০১৭১০০০০০০০',
-    email: 'support@boighor.example.com',
-    address: '৪৪ বাংলাবাজার, ঢাকা-১১০০, বাংলাদেশ',
+    hotline: '+880 1944-576159',
+    email: 'sahadat.info01@gmail.com',
+    address: 'Barura, Comilla, Bangladesh',
     hours: 'প্রতিদিন সকাল ৯টা - রাত ১০টা',
   },
 

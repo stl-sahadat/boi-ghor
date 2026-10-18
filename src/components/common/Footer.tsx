@@ -56,7 +56,7 @@ export const Footer: React.FC = () => {
               </a>
 
               <a
-                href="https://maps.google.com/?q=Banglabazar+Dhaka"
+                href="https://maps.google.com/?q=Barura+Comilla+Bangladesh"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="flex items-center gap-2 hover:text-white hover:underline transition-colors cursor-pointer w-fit"
