@@ -1,0 +1,6 @@
+{
+  "name": "বইঘর — অনলাইন বুকস্টোর",
+  "description": "বাংলাদেশের প্রিমিয়াম অনলাইন বইয়ের দোকান। সহজে বই খুঁজুন, উইশলিস্টে রাখুন ও অর্ডার করুন।",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

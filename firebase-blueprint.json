@@ -1,0 +1,135 @@
+{
+  "entities": {
+    "Book": {
+      "title": "Book",
+      "description": "Represents a book in the bookstore catalog.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 128 },
+        "title": { "type": "string", "maxLength": 250 },
+        "englishTitle": { "type": "string", "maxLength": 250 },
+        "author": { "type": "string", "maxLength": 200 },
+        "publisher": { "type": "string", "maxLength": 200 },
+        "description": { "type": "string", "maxLength": 4000 },
+        "demoPrice": { "type": "number" },
+        "originalPrice": { "type": "number" },
+        "discountPercent": { "type": "number" },
+        "stock": { "type": "number" },
+        "category": { "type": "string", "maxLength": 150 },
+        "categorySlug": { "type": "string", "maxLength": 100 },
+        "isPublished": { "type": "boolean" },
+        "isArchived": { "type": "boolean" },
+        "rating": { "type": "number" },
+        "ratingCount": { "type": "number" },
+        "coverImage": { "type": "string", "maxLength": 2048 },
+        "previewImages": { "type": "array" },
+        "previewLabels": { "type": "array" },
+        "createdAt": { "type": "string" },
+        "updatedAt": { "type": "string" }
+      },
+      "required": ["id", "title", "author", "publisher", "demoPrice", "stock", "categorySlug"]
+    },
+    "Category": {
+      "title": "Category",
+      "description": "Book catalog category definition.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 128 },
+        "name": { "type": "string", "maxLength": 150 },
+        "englishName": { "type": "string", "maxLength": 150 },
+        "slug": { "type": "string", "maxLength": 100 },
+        "iconName": { "type": "string", "maxLength": 50 },
+        "description": { "type": "string", "maxLength": 500 },
+        "bookCount": { "type": "number" }
+      },
+      "required": ["id", "name", "slug"]
+    },
+    "Order": {
+      "title": "Order",
+      "description": "Customer purchase order.",
+      "type": "object",
+      "properties": {
+        "orderId": { "type": "string", "maxLength": 128 },
+        "userId": { "type": "string", "maxLength": 128 },
+        "createdAt": { "type": "string" },
+        "items": { "type": "array" },
+        "subtotal": { "type": "number" },
+        "deliveryFee": { "type": "number" },
+        "total": { "type": "number" },
+        "customer": { "type": "object" },
+        "status": {
+          "type": "string",
+          "enum": ["pending", "processing", "shipped", "delivered", "cancelled"]
+        }
+      },
+      "required": ["orderId", "total", "status", "customer", "items"]
+    },
+    "User": {
+      "title": "User",
+      "description": "Customer profile account.",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string", "maxLength": 128 },
+        "fullName": { "type": "string", "maxLength": 150 },
+        "phone": { "type": "string", "maxLength": 30 },
+        "email": { "type": "string", "maxLength": 200 },
+        "district": { "type": "string", "maxLength": 100 },
+        "address": { "type": "string", "maxLength": 500 },
+        "createdAt": { "type": "string" }
+      },
+      "required": ["userId", "phone"]
+    },
+    "Admin": {
+      "title": "Admin",
+      "description": "Authorized administrator record.",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string", "maxLength": 128 },
+        "email": { "type": "string", "maxLength": 200 },
+        "role": { "type": "string", "enum": ["admin"] },
+        "authorizedAt": { "type": "string" }
+      },
+      "required": ["uid", "email", "role"]
+    },
+    "SiteSetting": {
+      "title": "SiteSetting",
+      "description": "Global storefront settings and featured collections.",
+      "type": "object",
+      "properties": {
+        "brandNameBangla": { "type": "string", "maxLength": 100 },
+        "brandNameEnglish": { "type": "string", "maxLength": 100 },
+        "tagline": { "type": "string", "maxLength": 250 },
+        "announcement": { "type": "string", "maxLength": 500 },
+        "deliveryFees": { "type": "object" },
+        "updatedAt": { "type": "string" }
+      },
+      "required": ["brandNameBangla"]
+    }
+  },
+  "firestore": {
+    "/books/{bookId}": {
+      "schema": { "$ref": "#/entities/Book" },
+      "description": "Public catalog of books available for purchase."
+    },
+    "/categories/{categoryId}": {
+      "schema": { "$ref": "#/entities/Category" },
+      "description": "Store book categories."
+    },
+    "/orders/{orderId}": {
+      "schema": { "$ref": "#/entities/Order" },
+      "description": "Orders placed by customers."
+    },
+    "/users/{userId}": {
+      "schema": { "$ref": "#/entities/User" },
+      "description": "Customer personal account profiles."
+    },
+    "/admins/{adminId}": {
+      "schema": { "$ref": "#/entities/Admin" },
+      "description": "Trusted administrator access control records."
+    },
+    "/settings/{settingId}": {
+      "schema": { "$ref": "#/entities/SiteSetting" },
+      "description": "Storefront configuration and collection banners."
+    }
+  }
+}

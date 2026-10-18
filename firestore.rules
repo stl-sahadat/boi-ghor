@@ -1,0 +1,104 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Default deny all access
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // Helper functions
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isValidId(id) {
+      return id is string && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    function incoming() {
+      return request.resource.data;
+    }
+
+    function existing() {
+      return resource.data;
+    }
+
+    function isAdmin() {
+      return isSignedIn() && (
+        exists(/databases/$(database)/documents/admins/$(request.auth.uid)) ||
+        request.auth.token.email == 'sahadat.info01@gmail.com'
+      );
+    }
+
+    // Books Collection: Public can read published, active books. Only admins can write.
+    match /books/{bookId} {
+      allow get: if isValidId(bookId) && (
+        isAdmin() || 
+        (resource.data.isPublished == true && resource.data.isArchived != true)
+      );
+      
+      allow list: if isAdmin() || (
+        resource.data.isPublished == true && resource.data.isArchived != true
+      );
+
+      allow create, update, delete: if isAdmin() && isValidId(bookId);
+    }
+
+    // Categories Collection: Public can read, only admin can manage
+    match /categories/{categoryId} {
+      allow read: if isValidId(categoryId);
+      allow create, update, delete: if isAdmin() && isValidId(categoryId);
+    }
+
+    // Orders Collection:
+    // - Customers can create orders (with strictly validated payload)
+    // - Customers can only read their own orders (matching userId)
+    // - Admins can read all orders and update fulfillment status
+    match /orders/{orderId} {
+      allow get: if isValidId(orderId) && (
+        isAdmin() || 
+        (isSignedIn() && resource.data.userId == request.auth.uid)
+      );
+
+      allow list: if isAdmin() || (
+        isSignedIn() && resource.data.userId == request.auth.uid
+      );
+
+      allow create: if isValidId(orderId) &&
+        incoming().orderId == orderId &&
+        incoming().total is number && incoming().total > 0 &&
+        incoming().status == 'pending';
+
+      allow update: if isAdmin() && isValidId(orderId) &&
+        incoming().diff(existing()).affectedKeys().hasOnly(['status', 'updatedAt']);
+
+      allow delete: if false; // Orders cannot be deleted
+    }
+
+    // User Profile Collection:
+    // - Private PII isolation: Only owner or admin can read/write their user record
+    match /users/{userId} {
+      allow get: if isValidId(userId) && (isAdmin() || (isSignedIn() && request.auth.uid == userId));
+      allow list: if isAdmin();
+      allow create, update: if isValidId(userId) && isSignedIn() && request.auth.uid == userId &&
+        !incoming().keys().hasAny(['role', 'isAdmin']); // Prevent self-elevation
+      allow delete: if false;
+    }
+
+    // Admins Collection:
+    // - Read/Write strictly restricted to existing admins
+    match /admins/{adminId} {
+      allow read: if isAdmin();
+      allow write: if false; // Only configured via trusted server setup
+    }
+
+    // Settings Collection:
+    // - Public can read storefront config
+    // - Only admin can update settings
+    match /settings/{settingId} {
+      allow read: if isValidId(settingId);
+      allow write: if isAdmin() && isValidId(settingId);
+    }
+  }
+}
